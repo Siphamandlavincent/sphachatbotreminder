@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot with Reminders</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            display: flex;
+            width: 80%;
+            max-width: 1200px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: white;
+        }
+
+        .chat-window {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+        }
+
+        .conversation-area {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+        }
+
+        .input-area {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        .input-area input {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .input-area button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .input-area button:hover {
+            background-color: #0056b3;
+        }
+
+        .reminder-section {
+            flex: 1;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-left: 1px solid #ddd;
+        }
+
+        .reminder-section h2 {
+            margin-top: 0;
+            font-size: 20px;
+            font-family: 'Inter', sans-serif;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reminder-section button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: background-color 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+            display: block;
+            text-align: center;
+        }
+
+        .reminder-section button:hover {
+            background-color: #218838;
+        }
+
+        #reminder-form {
+            display: none;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        #reminder-form input {
+            display: block;
+            width: calc(100% - 20px);
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s ease;
+        }
+
+        #reminder-form input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        #reminder-form button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+            display: block;
+            text-align: center;
+        }
+
+        #reminder-form button:hover {
+            background-color: #c82333;
+        }
+
+        #reminder-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 0;
+        }
+
+        #reminder-list li {
+            background-color: #e9ecef;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            border: 1px solid #ddd;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+
+        #reminder-list li:hover {
+            background-color: #f0f0f0;
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            max-width: 80%;
+            clear: both;
+            font-family: 'Inter', sans-serif;
+            word-wrap: break-word;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .user-message {
+            background-color: #e0f7fa;
+            color: #0c3040;
+            align-self: flex-end;
+            text-align: right;
+            border-bottom-right-radius: 0;
+        }
+
+        .bot-message {
+            background-color: #f0f0f0;
+            color: #333;
+            align-self: flex-start;
+            text-align: left;
+            border-bottom-left-radius: 0;
+        }
+
+        .input-area button i {
+            margin-right: 0;
+        }
+
+        .delete-button {
+            background-color: transparent;
+            color: #dc3545;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            margin-left: 10px;
+            transition: color 0.2s ease;
+        }
+
+        .delete-button:hover {
+            color: #bd2130;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="chat-window">
+            <div class="model-selector">
+                <select id="model-select">
+                    <option value="openrouter/auto">Auto (Default)</option>
+                    <option value="openai/gpt-4">GPT-4</option>
+                    <option value="openai/gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                    <option value="anthropic/claude-2">Claude 2</option>
+                    <option value="google/palm-2-chat-bison">PaLM 2</option>
+                    <option value="meta-llama/llama-2-70b-chat">Llama 2</option>
+                    <option value="mistralai/mixtral-8x7b">Mixtral 8x7B</option>
+                </select>
+            </div>
+            <div class="conversation-area">
+                <div class="message bot-message">Hello! How can I help you today?</div>
+            </div>
+            <div class="input-area">
+                <input type="text" id="message-input" placeholder="Type your message...">
+                <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+        <div class="reminder-section">
+            <h2><i class="fas fa-bell"></i> Reminders</h2>
+            <button id="add-reminder-button"><i class="fas fa-plus"></i> Add Reminder</button>
+            
+            <div id="reminder-form">
+                <input type="text" id="reminder-title" placeholder="Reminder title">
+                <input type="date" id="reminder-date">
+                <input type="time" id="reminder-time">
+                <button id="save-reminder">Save Reminder</button>
+                <button id="cancel-reminder">Cancel</button>
+            </div>
+            <ul id="reminder-list">
+                <!-- Reminders will be listed here -->
+            </ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+
+<style>
+    /* Add these to your existing styles */
+    .model-selector {
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .model-selector select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-family: 'Inter', sans-serif;
+        background-color: white;
+    }
+
+    .message.error {
+        background-color: #fff3f3;
+        border: 1px solid #ffcdd2;
+    }
+</style>
